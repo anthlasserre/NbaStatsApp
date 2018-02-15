@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">NBA Stats</string>
+    <string name="playerName"></string>
+    <string name="playerPicture"></string>
+    <string name="playerNumber"></string>
+    <string name="playerPoints"></string>
+    <string name="playerAssist"></string>
+    <string name="playerRebounds"></string>
+</resources>
