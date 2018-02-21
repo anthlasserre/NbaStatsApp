@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Android.Content;
 using Newtonsoft.Json;
 
-namespace NBAStats
+namespace NbaStats
 {
+    
     public class NbaApi
     {
 
@@ -13,7 +15,24 @@ namespace NBAStats
         {
         }
 
-        public async Task<List<RootObject>> GetPlayerInfo(string uri)
+        public async Task<RootObject> GetPlayerStats(string uri)
+        {
+            HttpClient myClient = new HttpClient();
+
+            RootObject Items = null;
+
+            var response = await myClient.GetAsync(uri);
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                Items = JsonConvert.DeserializeObject<RootObject>(content);
+
+            }
+
+            return Items;
+        }
+
+        public async Task<List<RootObject>> GetPlayersTeam(string uri)
         {
             HttpClient myClient = new HttpClient();
 
@@ -30,46 +49,9 @@ namespace NBAStats
             return Items;
         }
 
-        public async Task<RootObject2> GetPlayerStats(string uriPlayer)
-        {
-            HttpClient myClient2 = new HttpClient();
-
-            RootObject2 Items2 = null;
-
-            var response2 = await myClient2.GetAsync(uriPlayer);
-            if (response2.IsSuccessStatusCode)
-            {
-                var content2 = await response2.Content.ReadAsStringAsync();
-                Items2 = JsonConvert.DeserializeObject<RootObject2>(content2);
-
-            }
-
-            return Items2;
-        }
-
     }
-
 
     public class RootObject
-    {
-        public int lastYear { get; set; }
-        public int weight { get; set; }
-        public int rookieYear { get; set; }
-        public int uniformNumber { get; set; }
-        public string fullName { get; set; }
-        public string height { get; set; }
-        public string lastName { get; set; }
-        public string firstName { get; set; }
-        public string birthDate { get; set; }
-        public string profileUrl { get; set; }
-        public string status { get; set; }
-        public string team { get; set; }
-        public int playerId { get; set; }
-        public string position { get; set; }
-    }
-
-
-    public class RootObject2
     {
         public string name { get; set; }
         public string team_acronym { get; set; }

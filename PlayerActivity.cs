@@ -5,14 +5,16 @@ using System;
 using Square.Picasso;
 using Android.Content;
 
-namespace NBAStats
+namespace NbaStats
 {
-    [Activity(Label = "NBA Stats", MainLauncher = true)]
+    [Activity(Label = "Nba Stats", MainLauncher = false)]
     public class PlayerActivity : Activity
     {
         private ImageView playerPicture;
         private TextView playerName;
-        // private TextView playerNumber;
+        private TextView playerTeam;
+        private ImageView playerTeamPicture;
+        private TextView playerGames;
         private TextView playerPoints;
         private TextView playerAssist;
         private TextView playerRebounds;
@@ -26,101 +28,93 @@ namespace NBAStats
 
             playerPicture = FindViewById<ImageView>(Resource.Id.playerPicture);
             playerName = FindViewById<TextView>(Resource.Id.playerName);
-            // playerNumber = FindViewById<TextView>(Resource.Id.playerNumber);
+            playerTeam = FindViewById<TextView>(Resource.Id.playerTeam);
+            playerGames = FindViewById<TextView>(Resource.Id.playerGames);
+            playerTeamPicture = FindViewById<ImageView>(Resource.Id.playerTeamPicture);
             playerPoints = FindViewById<TextView>(Resource.Id.playerPoints);
             playerAssist = FindViewById<TextView>(Resource.Id.playerAssist);
             playerRebounds = FindViewById<TextView>(Resource.Id.playerRebounds);
 
-            int resource = Resources.GetIdentifier("bryant", "drawable", Application.Context.PackageName);
+            int resource = Resources.GetIdentifier("no_player", "drawable", Application.Context.PackageName);
 
             string uri = Intent.Extras.GetString("uri");
             string firstname = Intent.Extras.GetString("firstname");
             string lastname = Intent.Extras.GetString("lastname");
 
-            Console.WriteLine(uri);
+            // Console.WriteLine(uri);
 
             NbaApi nba = new NbaApi();
-            var Items = await nba.GetPlayerInfo(uri);
+            var Items = await nba.GetPlayerStats(uri);
 
-            if (Items.Count != 0)
+            if (Items != null)
             {
-
                 // Init Player Data
-                string name = Items[0].fullName;
-                int number = Items[0].uniformNumber;
-                int weight = Items[0].weight;
-                string height = Items[0].height;
-                string birthdate = Items[0].birthDate.Substring(0, 4);
-                string status = Items[0].status;
-                string team = Items[0].team;
-                string position = Items[0].position;
 
-                // Reformat Height in CM
-                // string foot = height.Substring(0,1).Trim();
-                // string inches = height.Substring(2,3).Trim();
-                // int heightFormated = (Convert.ToInt16(foot) * 12) + Convert.ToInt16(inches);
+                // INFO
+                string name = Items.name;
+                string team_acronym = Items.team_acronym;
+                string team_name = Items.team_name;
 
+                // STATS
+                string games_played = Items.games_played;
+                string minutes_per_game = Items.minutes_per_game;
+                string field_goals_attempted_per_game = Items.field_goals_attempted_per_game;
+                string field_goals_made_per_game = Items.field_goals_made_per_game;
+                string field_goal_percentage = Items.field_goal_percentage;
+                string free_throw_percentage = Items.free_throw_percentage;
+                string three_point_attempted_per_game = Items.three_point_attempted_per_game;
+                string three_point_made_per_game = Items.three_point_made_per_game;
+                string three_point_percentage = Items.three_point_percentage;
+                string points_per_game = Items.points_per_game;
+                string offensive_rebounds_per_game = Items.offensive_rebounds_per_game;
+                string defensive_rebounds_per_game = Items.defensive_rebounds_per_game;
+                string rebounds_per_game = Items.rebounds_per_game;
+                string assists_per_game = Items.assists_per_game;
+                string steals_per_game = Items.steals_per_game;
+                string blocks_per_game = Items.blocks_per_game;
+                string turnovers_per_game = Items.turnovers_per_game;
+                string player_efficiency_rating = Items.player_efficiency_rating;
+
+                // Principal strings in use
+                string points = Items.points_per_game;
+                string assists = Items.assists_per_game;
+                string rebounds = Items.rebounds_per_game;
+
+                // pictures
                 string picturePlayer = "https://nba-players.herokuapp.com/players/" + lastname + "/" + firstname;
+                int picturePlayerTeam = Resources.GetIdentifier(team_acronym, "drawable", Application.Context.PackageName);
+
+
+                // Load Pictures
                 Picasso.With(this).Load(picturePlayer).Into(playerPicture);
-                
-                Console.WriteLine("---- Get Data Player ----");
-                Console.WriteLine("Fullname: " + Items[0].fullName);
-                Console.WriteLine("Number: " + Items[0].uniformNumber);
-                // Console.WriteLine("Height: " + heightFormated);
-                // Console.WriteLine("Height: " + foot + "--" + inches);
-                Console.WriteLine("Birthdate: " + birthdate);
-                Console.WriteLine("Status: " + status);
-                Console.WriteLine("Team: " + team);
-                Console.WriteLine("Position: " + position);
-                Console.WriteLine("-------------------------");
+                playerTeamPicture.SetImageResource(picturePlayerTeam);
 
-                playerName.Text = Items[0].fullName;
-                // playerNumber.Text = Items[0].uniformNumber.ToString();
+                // Load Text
+                playerName.Text = name;
+                playerTeam.Text = team_name;
+                /////
+                playerGames.Text = games_played;
+                playerPoints.Text = points;
+                playerAssist.Text = assists;
+                playerRebounds.Text = rebounds;
 
 
-                int playerId = Items[0].playerId;
-
-                string uriPlayer = "https://nba-players.herokuapp.com/players-stats/" + lastname + "/" + firstname;
-
+                // Show in console
                 Console.WriteLine("---- URI Player ----");
                 Console.WriteLine(uri);
-                Console.WriteLine(uriPlayer);
-                Console.WriteLine("--------------------");
-
-                var Items2 = await nba.GetPlayerStats(uriPlayer);
-
-                if (Items2 == null) {
-                    uriPlayer = "https://nba-players.herokuapp.com/players-stats/" + lastname + "/" + firstname;
-                }
-
-                if (Items2 != null)
-                {
-                    // Init Player Data Details
-
-                    string points = Items2.points_per_game;
-                    string assists = Items2.assists_per_game;
-                    string rebounds = Items2.rebounds_per_game;
-
-                    playerPoints.Text = points;
-                    playerAssist.Text = assists;
-                    playerRebounds.Text = rebounds;
-
-                    Console.WriteLine("---- Get Data Player Details ----");
-                    Console.WriteLine("Points: " + points);
-                    Console.WriteLine("Asssits: " + assists);
-                    Console.WriteLine("Rebounds: " + rebounds);
-                    Console.WriteLine("---------------------------------");
-
-                } else {
-                    Console.WriteLine("---- Get Data Player Details ----");
-                    Console.WriteLine("We've not found some details data of this player");
-                    Console.WriteLine("---------------------------------");
-                }
+                Console.WriteLine("---- Get Data Player ----");
+                Console.WriteLine("Fullname: " + name);
+                Console.WriteLine("Team ID: " + team_acronym);
+                Console.WriteLine("Team Full: " + team_name);
+                Console.WriteLine("Player Picture: " + picturePlayerTeam);
+                Console.WriteLine("Team Picture: " + picturePlayer);
+                Console.WriteLine("---- Get Data Player Details ----");
+                Console.WriteLine("Points: " + points);
+                Console.WriteLine("Asssits: " + assists);
+                Console.WriteLine("Rebounds: " + rebounds);
+                Console.WriteLine("---------------------------------");
 
             }
-
-
-
 
 
 
