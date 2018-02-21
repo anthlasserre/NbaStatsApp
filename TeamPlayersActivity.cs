@@ -61,6 +61,8 @@ namespace NbaStats
                 Intent intent = new Intent(this, typeof(PlayerActivity));
                 Bundle extras = new Bundle();
                 extras.PutString("uri", uri);
+                extras.PutString("firstname", firstName);
+                extras.PutString("lastname", lastName);
                 intent.PutExtras(extras);
                 StartActivity(intent);
 
