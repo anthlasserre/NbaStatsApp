@@ -1,30 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using Android.App;
 using Android.Content;
-using Android.Graphics;
 using Android.OS;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace NbaStats
 {
-    [Activity(Label = "Players in Team")]
+    
+    [Activity(Label = "@string/teamPlayers")]
 
     public class TeamPlayersActivity : Activity
     {
         List<string> players = new List<string>();
         ListView teamPlayersList;
+
+        public override void OnAttachedToWindow()
+        {
+            base.OnAttachedToWindow();
+            string team = Intent.GetStringExtra("team") ?? "Team not available";
+            Window.SetTitle(team);
+        }
+
         protected override async void OnCreate(Bundle savedInstanceState)
         {
+            
             base.OnCreate(savedInstanceState);
+            string team = Intent.GetStringExtra("team") ?? "Team not available";
             string teamAcronym = Intent.GetStringExtra("key") ?? "Key not available";
+
             Console.WriteLine(teamAcronym);
 
             // CALL API
@@ -69,5 +74,21 @@ namespace NbaStats
             };
 
         }
+
+        public override bool OnCreateOptionsMenu(IMenu menu)
+        {
+            var inflater = MenuInflater;
+            inflater.Inflate(Resource.Menu.main_menu, menu);
+            return base.OnCreateOptionsMenu(menu);
+        }
+
+        public override bool OnOptionsItemSelected(IMenuItem item)
+        {
+            Intent intent = new Intent(this, typeof(SearchPlayer));
+            Bundle extras = new Bundle();
+            StartActivity(intent);
+            return base.OnOptionsItemSelected(item);
+        }
+
     }
 }
